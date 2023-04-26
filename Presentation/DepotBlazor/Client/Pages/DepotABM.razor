@@ -1,0 +1,143 @@
+﻿@page "/Depositos"
+
+<PageTitle>Depositos</PageTitle>
+
+<MudPaper Class="d-flex" Width="100%" Height="100%" Elevation="0">
+    <MudStack Row=true Justify="Justify.SpaceBetween" Style="width:100%; height:100%;">
+        <MudPaper Width="200px" Height="100%" Elevation="0">
+            <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="Logout"
+                       Style="width:80%; margin:5px;">Logout</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Productos"
+                       Style="width:80%; margin:5px;">Productos</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Depositos"
+                       Style="width:80%; margin:5px;">Depositos</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Movimientos"
+                       Style="width:80%; margin:5px;text-align:center;">Realizar Movimiento</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Stock"
+                       Style="width:80%; margin:5px;">Stock</MudButton>
+        </MudPaper>
+        <MudPaper Width="100%" Height="100%" Elevation="0">
+            @if (!showPage)
+            {
+                <MudText Typo="Typo.h5">Consultando datos. Espere por favor...</MudText>
+            }
+            else
+            {
+                @*agrega deposito*@
+                <MudPaper Width="100%" Height="100%" Elevation="0">
+                    @if (!addEntity)
+                    {
+                        <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Success"
+                               OnClick="()=>addEntity=true"
+                               StartIcon="@Icons.Material.Filled.Add" Style="margin:10px;">Agregar</MudButton>
+                    }
+                    else
+                    {
+                        <MudPaper Elevation="4" Style="margin: auto;width: 100%;">
+                            <br />
+                            <MudStack Row=false AlignItems="AlignItems.Center"
+                                      Spacing="4" Style="width:100%;">
+                                <MudText Typo="Typo.h5">Registrar nuevo deposito</MudText>
+                                <MudTextField T="string" Label="Codigo" Required="true" RequiredError="Codigo es requerido!"
+                                      @bind-Value="createEntity.Code" Variant="Variant.Filled" style="width:250px;" />
+                                <MudTextField T="string" Label="Nombre" Required="true" RequiredError="Descripcion es requerido!"
+                                      @bind-Value="createEntity.Name" Variant="Variant.Filled" style="width:250px;" />
+                                <MudStack Row=false AlignItems="AlignItems.Center" Style="padding:2px;width:250px;" >
+                                    @if (connecting)
+                                    {
+                                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true"
+                                                    Style="margin:10px;width:200px;">
+                                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                            <MudText Class="ms-2">Registrando</MudText>
+                                        </MudButton>
+                                    }
+                                    else{
+                                        <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="()=>Create(createEntity)"
+                                            Style="margin:10px;width:200px;">Registrar</MudButton>
+                                        <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Success"
+                                           OnClick="()=>addEntity=false" Style="margin:10px;width:200px;">Cerrar</MudButton>
+                                    }
+                                    <br />
+                                </MudStack>
+                            </MudStack>
+                        </MudPaper>
+                        <br />
+                    }
+                </MudPaper>
+
+                @*update productos*@
+                @if (putEntity)
+                {
+                    <MudPaper Elevation="4" Style="margin: auto;width: 100%;">
+                        <br />
+                        <MudStack Row=false AlignItems="AlignItems.Center" Spacing="4" Style="width:100%;">
+                            <MudText Typo="Typo.h5">Actualizar deposito</MudText>
+                            <MudTextField T="string" Label="Codigo" Required="true" RequiredError="Codigo es requerido!"
+                                  @bind-Value="updateEntity.Code" Variant="Variant.Filled" style="width:250px;" />
+                            <MudTextField T="string" Label="Nombre" Required="true" RequiredError="Descripcion es requerido!"
+                                  @bind-Value="updateEntity.Name" Variant="Variant.Filled" style="width:250px;" />
+                            <MudStack Row=false AlignItems="AlignItems.Center" Style="padding:2px;width:250px;">
+                                @if (connecting)
+                                {
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true"
+                                                Style="margin:10px;width:200px;">
+                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                        <MudText Class="ms-2">Registrando</MudText>
+                                    </MudButton>
+                                }
+                                else
+                                {
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="()=>Update(updateEntity)"
+                                        Style="margin:10px;width:200px;">Actualizar</MudButton>                                    
+                                    <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Success"
+                                        OnClick="()=>putEntity=false" Style="margin:10px;width:200px;">Cerrar</MudButton>
+                                }
+                                <br />
+                            </MudStack>
+                        </MudStack>
+                    </MudPaper>
+                    <br />
+                }
+
+                @*muestra productos*@
+                <MudTable Items="@depots" Dense="true" Hover="true" Style="padding: 10px;" Striped="true"
+                      Filter="new Func<DepotDto,bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Depositos</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchString1" Placeholder="Buscar" Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                        </MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh Style="text-align: center;">Codigo</MudTh>
+                        <MudTh Style="text-align: center;">Nombre</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd Style="text-align: center;">
+                            @context.Code
+                        </MudTd>
+                        <MudTd Style="text-align: center;">
+                            @context.Name
+                        </MudTd>
+                        <MudTd>
+                            <MudIconButton Variant="MudBlazor.Variant.Filled" Color="Color.Primary"
+                                       OnClick="()=>{ putEntity= true; updateEntity = context;}"
+                                       Icon="@Icons.Filled.Autorenew" Title="Actualizar"></MudIconButton>
+                        </MudTd>
+                        <MudTd>
+                            <MudIconButton Variant="MudBlazor.Variant.Filled" Color="Color.Error" 
+                                        OnClick="()=>Delete(context)"
+                                       Icon="@Icons.Material.Filled.Delete" Title="Eliminar"></MudIconButton>
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager RowsPerPageString="Filas por paginas" InfoFormat="@infoFormat" />
+                    </PagerContent>
+                </MudTable>
+
+            }
+        </MudPaper>
+    </MudStack>
+</MudPaper>
+

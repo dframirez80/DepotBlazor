@@ -1,0 +1,96 @@
+﻿@page "/Stock"
+
+<PageTitle>Productos</PageTitle>
+
+<MudPaper Class="d-flex" Width="100%" Height="100%" Elevation="0">
+    <MudStack Row=true Justify="Justify.SpaceBetween" Style="width:100%; height:100%;">
+        <MudPaper Width="200px" Height="100%" Elevation="0">
+            <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="Logout" 
+                Style="width:80%; margin:5px;">Logout</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Productos"
+                       Style="width:80%; margin:5px;">Productos</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Depositos"
+                       Style="width:80%; margin:5px;">Depositos</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Movimientos"
+                       Style="width:80%; margin:5px;text-align:center;">Realizar Movimiento</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Stock"
+                       Style="width:80%; margin:5px;">Stock</MudButton>
+        </MudPaper>
+        <MudPaper Width="100%" Height="100%" Elevation="0">
+            @if (!showPage)
+            {
+                <MudText Typo="Typo.h5">Consultando datos. Espere por favor...</MudText>
+            }
+            else
+            {
+                @*muestra productos*@
+                <MudTable Items="@products" Dense="true" Hover="true" Style="padding: 10px;" Striped="true"
+                      Filter="new Func<ProductDto,bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Totales</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchString1" Placeholder="Buscar" Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                        </MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh Style="text-align: center;">Codigo</MudTh>
+                        <MudTh Style="text-align: center;">Descripcion</MudTh>
+                        <MudTh Style="text-align: center;">Cant.</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd Style="text-align: center;">
+                            @context.Code
+                        </MudTd>
+                        <MudTd Style="text-align: center;">
+                            @context.Description
+                        </MudTd>
+                        <MudTd Style="text-align: center;">
+                            @context.Quantity
+                        </MudTd>
+                        
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager RowsPerPageString="Filas por paginas" InfoFormat="@infoFormat" />
+                    </PagerContent>
+                </MudTable>
+
+                @*muestra productos*@
+                <MudTable Items="@parcialProducts" Dense="true" Hover="true" Style="padding: 10px;" Striped="true"
+                      Filter="new Func<ProductDto,bool>(FilterFunc2)" @bind-SelectedItem="selectedItem2">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Productos</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchString2" Placeholder="Buscar" Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+                        </MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh Style="text-align: center;">Codigo</MudTh>
+                        <MudTh Style="text-align: center;">Descripcion</MudTh>
+                        <MudTh Style="text-align: center;">Cant.</MudTh>
+                        <MudTh Style="text-align: center;">Deposito</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd Style="text-align: center;">
+                            @context.Code
+                        </MudTd>
+                        <MudTd Style="text-align: center;">
+                            @context.Description
+                        </MudTd>
+                        <MudTd Style="text-align: center;">
+                            @context.Quantity
+                        </MudTd>
+                        <MudTd Style="text-align: center;">
+                            @context.DepotName
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager RowsPerPageString="Filas por paginas" InfoFormat="@infoFormat" />
+                    </PagerContent>
+                </MudTable>
+            }
+        </MudPaper>
+    </MudStack>
+</MudPaper>
+

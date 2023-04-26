@@ -1,0 +1,88 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="display: block" style="color:white;">DepotBlazor</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3" style="@(login ? "display: block" : "display: none")">
+            <NavLink class="nav-link px-3" href="/LoginAccount" Match="NavLinkMatch.All">
+                <span aria-hidden="true"></span> Login
+            </NavLink>
+        </div>
+        <div class="nav-item pa-3" style="@(login ? "display: none" : "display: block")">
+            <NavLink class="nav-link pa-3" href="/LoginAccount" Match="NavLinkMatch.All" @onclick="Logout">
+                <span  aria-hidden="true"></span> Logout
+            </NavLink>
+        </div>
+        <div class="nav-item pa-3" style="@(login ? "display: none" : "display: block")">
+            <NavLink class="nav-link pa-3" href="/LoginAccount" Match="NavLinkMatch.All">
+                <span aria-hidden="true"></span> Depositos
+            </NavLink>
+        </div>
+        <div class="nav-item pa-3" style="@(login ? "display: none" : "display: block")">
+            <NavLink class="nav-link pa-3" href="/LoginAccount" Match="NavLinkMatch.All">
+                <span aria-hidden="true"></span> Productos
+            </NavLink>
+        </div>
+        <div class="nav-item pa-3" style="@(login ? "display: none" : "display: block")">
+            <NavLink class="nav-link pa-3" href="/LoginAccount" Match="NavLinkMatch.All">
+                <span aria-hidden="true"></span> Movimientos
+            </NavLink>
+        </div>
+        <div class="nav-item pa-3" style="@(login ? "display: none" : "display: block")">
+            <NavLink class="nav-link pa-3" href="/LoginAccount" Match="NavLinkMatch.All">
+                <span aria-hidden="true"></span> Stock
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    [Inject] NavigationManager navigation { get; set; }
+    [Inject] ILocalStorageService localStorage { get; set; }
+
+    bool login = true;
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var token = await localStorage.GetItemAsync<string>("token");
+        if (!string.IsNullOrEmpty(token))
+        {
+            try
+            {
+                var date = new JwtSecurityTokenHandler().ReadJwtToken(token);
+                var expiration = date.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Expiration).Value;
+                var now = DateTime.Now.ToUniversalTime();
+                var exp = Convert.ToDateTime(expiration);
+                login = (exp > now) ? false : true;
+            }
+            catch (Exception)
+            {
+                login = true;
+            }
+        }
+        if(login)
+            navigation.NavigateTo("/LoginAccount");
+        else
+            navigation.NavigateTo("/Index");
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    async Task Logout()
+    {
+        await localStorage.SetItemAsync<string>("token", string.Empty); 
+        await localStorage.ClearAsync();
+    }
+}

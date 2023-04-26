@@ -1,0 +1,35 @@
+﻿@page "/LoginAccount"
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+<PageTitle>Login</PageTitle>
+
+<MudPaper Class="d-flex" Width="400px" Style="margin:auto;padding:5px;" >
+	<MudForm @bind-IsValid="@success" Style="flex-flow: column nowrap; align-items:center; row-gap:5px;width:100%;" Class="d-flex">
+		<br />
+		<h3>Acceso a usuarios</h3>
+		<MudTextField T="string" Label="Nombre de usuario" Required="true" 
+					 Style="width:300px" RequiredError="Nombre de usuario es requerido!"
+					  @bind-Value="login.Email" Variant="Variant.Filled" Placeholder="usuario" />
+		<MudTextField T="string" Label="Contraseña" Variant="Variant.Filled" Style="width:300px"
+					  InputType="InputType.Password" @bind-Value="login.Password"
+					  Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" Required="true"
+					  RequiredError="Contraseña es requerida!" />
+
+		<div style="margin-bottom: 15px;">
+				<br />
+			@if(connecting){
+				<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true">
+					<MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+					<MudText Class="ms-2">Conectando</MudText>
+				</MudButton>
+			}
+			else
+			{
+				<MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="()=>LoginAccountApi(login)"
+						   StartIcon="@Icons.Material.Filled.Login"
+						   Disabled="@(!success)" >Acceder</MudButton>
+			}
+		</div>
+	</MudForm>
+</MudPaper>

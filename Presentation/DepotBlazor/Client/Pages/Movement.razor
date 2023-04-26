@@ -1,0 +1,100 @@
+﻿@page "/Movimientos"
+
+<PageTitle>Productos</PageTitle>
+
+<MudPaper Class="d-flex" Width="100%" Height="100%" Elevation="0">
+    <MudStack Row=true Justify="Justify.SpaceBetween" Style="width:100%; height:100%;">
+        <MudPaper Width="200px" Height="100%" Elevation="0">
+            <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="Logout" 
+                Style="width:80%; margin:5px;">Logout</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Productos"
+                       Style="width:80%; margin:5px;">Productos</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Depositos"
+                       Style="width:80%; margin:5px;">Depositos</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Movimientos"
+                       Style="width:80%; margin:5px;text-align:center;">Realizar Movimiento</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" Href="/Stock"
+                       Style="width:80%; margin:5px;">Stock</MudButton>
+        </MudPaper>
+        <MudPaper Width="100%" Height="100%" Elevation="0">
+            @if (!showPage)
+            {
+                <MudText Typo="Typo.h5">Consultando datos. Espere por favor...</MudText>
+            }
+            else
+            {
+                @*agrega movimiento*@
+                <MudPaper Width="100%" Height="100%" Elevation="0">
+                    <MudPaper Elevation="4" Style="margin: auto;width: 100%;">
+                        <br />
+                        <MudStack Row=false AlignItems="AlignItems.Center" Spacing="4" Style="width:100%;">
+                            <MudText Typo="Typo.h5">Realizar movimientos de productos</MudText>
+                            <div style="width:280px;">
+                                <MudSelect T="string" Label="Codigo" AnchorOrigin="Origin.BottomCenter" Class="ma-4"
+                                       Variant="Variant.Filled" @bind-Value="@codeSelected"
+                                       SelectedValuesChanged="()=>GetProductCode(codeSelected)">
+                                    @foreach (var item in products)
+                                    {
+                                        <MudSelectItem Value="@(item.Code)" />
+                                    }
+                                </MudSelect>
+                                <div style="width:280px;">
+                                    <MudSelect T="string" Label="Deposito origen" AnchorOrigin="Origin.BottomCenter" Class="ma-4"
+                                           Variant="Variant.Filled" @bind-Value="@sourceSelected"
+                                           SelectedValuesChanged="GetQuantity">
+                                        @foreach (var item in depotList)
+                                        {
+                                            <MudSelectItem Value="@(item.Name)" />
+                                        }
+                                    </MudSelect>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(descriptionSelected))
+                            {
+                                <MudTextField T="string" Label="Descripcion" ReadOnly="true"
+                                      @bind-Value="descriptionSelected" Variant="Variant.Filled" style="width:250px;" />
+                            }
+                            @if (enableQuantity)
+                            {
+                                <MudTextField T="int" Label="Cantidad disponible" ReadOnly="true"
+                                      @bind-Value="sourceQuantity" Variant="Variant.Filled" style="width:250px;" />
+                                <div style="width:280px;">
+                                    <MudSelect T="string" Label="Deposito destino" AnchorOrigin="Origin.BottomCenter" Class="ma-4"
+                                       Variant="Variant.Filled" @bind-Value="@destSelected"
+                                       SelectedValuesChanged="CheckDepot">
+                                        @foreach (var item in depotList)
+                                        {
+                                            <MudSelectItem Value="@(item.Name)" />
+                                        }
+                                    </MudSelect>
+                                </div>
+                            }
+                            @if (enableDest)
+                            {
+                                <MudTextField T="int" Label="Cantidad a enviar"
+                                      @bind-Value="destQuantity" Variant="Variant.Filled" style="width:250px;" />
+                            }
+                            @if (connecting)
+                            {
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true"
+                                   Style="margin:10px;width:200px;">
+                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                    <MudText Class="ms-2">Registrando</MudText>
+                                </MudButton>
+                            }
+                            else
+                            {
+                                <MudStack Row=true AlignItems="AlignItems.Center" Style="padding:2px;">
+                                    <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="()=>Create(createEntity)"
+                                           Style="margin:10px;">Registrar</MudButton>
+                                </MudStack>
+                            }
+                        </MudStack>
+                    </MudPaper>
+                    <br />
+                </MudPaper>
+            }
+        </MudPaper>
+    </MudStack>
+</MudPaper>
+
